@@ -7,17 +7,18 @@ namespace LibreryProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BorrowCollector : ControllerBase
+    public class BorrowController : ControllerBase
     {
-        public BorrowCollector()
+        private readonly IDataLists _allLists;
+        public BorrowController(IDataLists context)
         {
-
+            _allLists = context;
         }
         // GET: api/<BorrowCollector>
         [HttpGet]
         public IEnumerable<Borrow> Get()
         {
-            return Lists_Of_The_Librery.Borrows;
+            return _allLists.BorrowList;
         }
 
         //מחזיר את ההשאלות של אדם מסוים
@@ -25,17 +26,17 @@ namespace LibreryProject.Controllers
         [HttpGet("with")]
         public IEnumerable<Borrow> Get([FromQuery] string? id, [FromQuery] string? name)
         {
-            return Lists_Of_The_Librery.Borrows.Where(sub => sub.Subscriber.Id == id || sub.Subscriber.Name == name).ToList();
+            return _allLists.BorrowList.Where(sub => sub.Subscriber.Id == id || sub.Subscriber.Name == name).ToList();
         }
         //מחזיר את ההשאלות של ספר מסוים
         // GET api/<BorrowCollector>/5
         [HttpGet("{id}current book")]
         public ActionResult<Borrow> Get([FromQuery] int idBorrow)
         {
-            Borrow borrow = Lists_Of_The_Librery.Borrows.FirstOrDefault(sub => sub.BorrowedBook.Code == idBorrow);
+            Borrow borrow = _allLists.BorrowList.FirstOrDefault(sub => sub.BorrowedBook.Code == idBorrow);
             if (borrow == null)
                 return NotFound();
-            return borrow;
+            return Ok(borrow);
 
         }
 
@@ -58,11 +59,11 @@ namespace LibreryProject.Controllers
         [HttpPost]
         public void Post(string bookName, string subscriberId)
         {
-            Book book1 = Lists_Of_The_Librery.Books.FirstOrDefault(b => b.Name == bookName);
-            Subscribe subscribe = Lists_Of_The_Librery.Subscriptions.FirstOrDefault(p => p.Id == subscriberId);
+            Book book1 = _allLists.BookList.FirstOrDefault(b => b.Name == bookName);
+            Subscribe subscribe = _allLists.SubscribeList.FirstOrDefault(p => p.Id == subscriberId);
             if (subscribe != null && book1 != null && book1.IsBorrowing == false)
             {
-                Lists_Of_The_Librery.Borrows.Add(new Borrow { BorrowDate = DateTime.Today, Subscriber = subscribe, BorrowedBook = book1, IsReturned = false });
+                _allLists.BorrowList.Add(new Borrow { BorrowDate = DateTime.Today, Subscriber = subscribe, BorrowedBook = book1, IsReturned = false });
                 book1.IsBorrowing = true;
             }
 
@@ -74,11 +75,11 @@ namespace LibreryProject.Controllers
         [HttpPut("{bookId}/{subscriberId}")]
         public void Put(int bookId, string subscriberId)
         {
-            Book book1 = Lists_Of_The_Librery.Books.FirstOrDefault(b => b.Code == bookId);
-            Subscribe subscribe = Lists_Of_The_Librery.Subscriptions.FirstOrDefault(p => p.Id == subscriberId);
+            Book book1 = _allLists.BookList.FirstOrDefault(b => b.Code == bookId);
+            Subscribe subscribe = _allLists.SubscribeList.FirstOrDefault(p => p.Id == subscriberId);
             if (subscribe != null && book1 != null)
             {
-                Borrow borrow = Lists_Of_The_Librery.Borrows.FirstOrDefault(b => (b.Subscriber.Id == subscriberId) && (b.BorrowedBook.Code == bookId));
+                Borrow borrow = _allLists.BorrowList.FirstOrDefault(b => (b.Subscriber.Id == subscriberId) && (b.BorrowedBook.Code == bookId));
                 if (borrow != null)
                 {
                     borrow.IsReturned = true;

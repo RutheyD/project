@@ -10,25 +10,29 @@ namespace LibreryProject.Controllers.Models
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SubscribeCollector : ControllerBase
+    public class SubscribeController : ControllerBase
     {
-        public SubscribeCollector()
+        private readonly IDataLists _allLists;
+        public SubscribeController(IDataLists context)
         {
-
+            _allLists = context;
         }
         // GET: api/<SubscribeCollector>
         [HttpGet]
         public IEnumerable<Subscribe> Get()
         {
-            return Lists_Of_The_Librery.Subscriptions;
+            return _allLists.SubscribeList;
         }
 
         // GET api/<SubscribeCollector>/5
         //מחזיר מנוי לפי מזהה
         [HttpGet("with id")]
-        public IEnumerable<Subscribe> Get([FromQuery] string ?id,[FromQuery] string ?name)
+        public ActionResult<Subscribe> Get([FromQuery] string ?id,[FromQuery] string ?name)
         {
-            return Lists_Of_The_Librery.Subscriptions.Where(s => s.Id == id ||s.Name==name).ToList();
+            Subscribe subscribers= _allLists.SubscribeList.FirstOrDefault(s => s.Id == id ||s.Name==name);
+            if (subscribers == null)
+                return NotFound();
+            return Ok(subscribers);
         }
         
         // POST api/<SubscribeCollector>
@@ -36,7 +40,7 @@ namespace LibreryProject.Controllers.Models
         [HttpPost]
         public void Post([FromBody] Subscribe subscribe)
         {
-            Lists_Of_The_Librery.Subscriptions.Add(subscribe);
+            _allLists.SubscribeList.Add(subscribe);
         }
 
 
@@ -45,7 +49,7 @@ namespace LibreryProject.Controllers.Models
         [HttpPut("{id}")]
         public void Put(string id,[FromBody]Subscribe subscribe)
         {
-             Subscribe subscriber=Lists_Of_The_Librery.Subscriptions.FirstOrDefault(sub=>sub.Id==id);
+             Subscribe subscriber= _allLists.SubscribeList.FirstOrDefault(sub=>sub.Id==id);
             if (subscriber != null) 
             {
                 subscriber.Name = subscribe.Name;
@@ -61,7 +65,7 @@ namespace LibreryProject.Controllers.Models
         [HttpDelete("{id}")]
         public void Delete(string id)
         {
-            Subscribe subscriber = Lists_Of_The_Librery.Subscriptions.FirstOrDefault(sub =>  sub.Id == id);
+            Subscribe subscriber = _allLists.SubscribeList.FirstOrDefault(sub =>  sub.Id == id);
             if(subscriber != null)
             {
                 subscriber.IsActive = false;

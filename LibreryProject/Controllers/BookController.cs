@@ -10,50 +10,55 @@ namespace LibreryProject.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        public BookController()
+        private readonly IDataLists _allLists;
+        public BookController(IDataLists context)
         {
-
+            _allLists = context;
         }
 
         // GET: api/<BookController>
         [HttpGet]
         public IEnumerable<Book> Get()
         {
-            return Lists_Of_The_Librery.Books;
+            return _allLists.BookList;
         }
 
         // GET api/<BookController>/5
         //??????????????????????????
+        //מחזיר ספר עפ מזהה
         [HttpGet("{code}")]
-        public ActionResult<Book> Get( int code)
+        public ActionResult<Book> Get(int code)
         {
-            Book book = Lists_Of_The_Librery.Books.FirstOrDefault(b => b.Code == code);
+            Book book = _allLists.BookList.FirstOrDefault(b => b.Code == code);
             if (book == null)
                 return NotFound();
             return Ok(book);
 
         }
+        //מחזיר רשימה של כל הספרים ששמם הוא השם שנשלח
          [HttpGet("{name}name")]
         public ActionResult<Book> Get( string name)
         {
-            List<Book> book = Lists_Of_The_Librery.Books.Where(b => b.Name == name).ToList();
+            List<Book> book = _allLists.BookList.Where(b => b.Name == name).ToList();
             if (book == null)
                 return NotFound();
             return Ok(book);
 
         }
         // POST api/<BookController>
+        //הוספת ספר מסוים
         [HttpPost]
         public void Post([FromBody] Book book)
         {
-            Lists_Of_The_Librery.Books.Add(book);
+            _allLists.BookList.Add(book);
         }
 
         // PUT api/<BookController>/5
+        //מעדכן ספר
         [HttpPut("{code}")]
         public void Put(int code, [FromBody] Book book)
         {
-            Book tmpBook = Lists_Of_The_Librery.Books.FirstOrDefault(book => book.Code == code);
+            Book tmpBook = _allLists.BookList.FirstOrDefault(book => book.Code == code);
             if (tmpBook != null)
             {
                 tmpBook.Author = book.Author;
@@ -67,9 +72,9 @@ namespace LibreryProject.Controllers
         [HttpDelete("{code}")]
         public void Delete(int code)
         {
-            Book book = Lists_Of_The_Librery.Books.FirstOrDefault(book => book.Code == code);
+            Book book = _allLists.BookList.FirstOrDefault(book => book.Code == code);
             if (book != null)
-                Lists_Of_The_Librery.Books.Remove(book);
+                _allLists.BookList.Remove(book);
         }
 
     }
