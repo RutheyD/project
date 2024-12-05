@@ -1,4 +1,6 @@
-﻿namespace Library.Core.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Library.Core.Models
 {
     public enum Ecategory
     {
@@ -8,8 +10,10 @@
     }
     public class Book
     {
-        public static int codeBook = 1;
+        public static int codeBook = 1000;
 
+        [Key]
+        public int IdBook { get; set; }
         public int Code { get; } = codeBook++;
         public string Name { get; set; }
         public Ecategory Category { get; set; }

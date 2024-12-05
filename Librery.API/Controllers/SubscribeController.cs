@@ -1,5 +1,6 @@
 ﻿
 using Library.Core.Models;
+using Library.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks.Dataflow;
 using System.Xml.Linq;
@@ -12,16 +13,16 @@ namespace Librery.API.Controllers
     [ApiController]
     public class SubscribeController : ControllerBase
     {
-        private readonly IDataContext _allLists;
-        public SubscribeController(IDataContext context)
+        private readonly ISubscribeService _subscribeService;
+        public SubscribeController(ISubscribeService subscribeService)
         {
-            _allLists = context;
+            _subscribeService = subscribeService;
         }
         // GET: api/<SubscribeCollector>
         [HttpGet]
         public IEnumerable<Subscribe> Get()
         {
-            return _allLists.SubscribeList;
+            return _subscribeService.GetAll();
         }
 
         // GET api/<SubscribeCollector>/5
@@ -29,10 +30,10 @@ namespace Librery.API.Controllers
         [HttpGet("with id")]
         public ActionResult<Subscribe> Get([FromQuery] string? id, [FromQuery] string? name)
         {
-            Subscribe subscribers = _allLists.SubscribeList.FirstOrDefault(s => s.Id == id || s.Name == name);
-            if (subscribers == null)
+            Subscribe subscriber = _subscribeService.GetSubscribeById(id, name);
+            if (subscriber == null)
                 return NotFound();
-            return Ok(subscribers);
+            return Ok(subscriber);
         }
 
         // POST api/<SubscribeCollector>
@@ -40,7 +41,7 @@ namespace Librery.API.Controllers
         [HttpPost]
         public void Post([FromBody] Subscribe subscribe)
         {
-            _allLists.SubscribeList.Add(subscribe);
+            _subscribeService.AddSubscriber(subscribe);
         }
 
 
@@ -49,27 +50,14 @@ namespace Librery.API.Controllers
         [HttpPut("{id}")]
         public void Put(string id, [FromBody] Subscribe subscribe)
         {
-            Subscribe subscriber = _allLists.SubscribeList.FirstOrDefault(sub => sub.Id == id);
-            if (subscriber != null)
-            {
-                subscriber.Name = subscribe.Name;
-                subscriber.Id = subscribe.Id;
-                subscriber.Phone = subscribe.Phone;
-                subscriber.Address = subscribe.Address;
-
-
-            }
+            _subscribeService.UpdateSubscriber(id, subscribe);
         }
 
         // DELETE api/<SubscribeCollector>/5
         [HttpDelete("{id}")]
         public void Delete(string id)
         {
-            Subscribe subscriber = _allLists.SubscribeList.FirstOrDefault(sub => sub.Id == id);
-            if (subscriber != null)
-            {
-                subscriber.IsActive = false;
-            }
+            _subscribeService.DeleteSubscriber(id);
         }
     }
 }

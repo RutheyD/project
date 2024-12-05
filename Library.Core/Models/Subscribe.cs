@@ -1,8 +1,12 @@
-﻿namespace Library.Core.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Library.Core.Models
 {
     public class Subscribe
     {
-        public string Id { get; set; }
+        [Key]
+        public int IdSubscribe { get; set; }
+        public string SubscriberId { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }

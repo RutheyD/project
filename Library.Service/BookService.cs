@@ -1,4 +1,5 @@
-﻿using Library.Core.Repositories;
+﻿using Library.Core.Models;
+using Library.Core.Repositories;
 using Library.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,12 @@ namespace Library.Service
         {
             _bookRepository=bookRepository;
         }
+        public List<Book> GetAllS() => _bookRepository.GetAllR();
+        public Book GetBookByCodeS(int code) => _bookRepository.GetBookByCodeR(code);
+        public List<Book> GetBooksByNameS(string name) => _bookRepository.GetBooksByNameR(name);
+        public void AddBookS(Book book)=> _bookRepository.AddBookR(book);
+        public void UpdatBookS(int code, Book book)=> _bookRepository.UpdatBookR(code,book);
+        public void DeleteBookS(int code)=> _bookRepository.DeleteBookR(code);
+
     }
 }

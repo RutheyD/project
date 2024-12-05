@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Library.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,10 @@ namespace Library.Core.Services
 {
     public interface IBorrowService
     {
+        List<Borrow> GetAll();
+        List<Borrow> GetBorrowesByIdOfSubscriber(string? id, string? name);
+        List<Borrow> GetBorrowesByCodeOfBook(int code);
+        void BorrowingBook(int bookId, string subscriberId);
+        void ReturningBook(int bookId, string subscriberId);
     }
 }

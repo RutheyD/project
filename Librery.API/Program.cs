@@ -1,3 +1,9 @@
+//using Library.Core.Repositories;
+//using Library.Core.Services;
+//using Library.Data;
+//using Library.Data.Repositories;
+//using Library.Service;
+
 using Library.Core.Repositories;
 using Library.Core.Services;
 using Library.Data;
@@ -14,6 +20,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IBookService,BookService>();
 builder.Services.AddScoped<IBookRepository,BookRepository>();
+builder.Services.AddScoped<ISubscribeService, SubscribeService>();
+builder.Services.AddScoped<ISubscribeRepository, SubscribeRepository>();
+builder.Services.AddScoped<IBorrowService, BorrowService>();
+builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
+builder.Services.AddDbContext<DataContext>();
 builder.Services.AddSingleton<DataContext>();
 
 var app = builder.Build();

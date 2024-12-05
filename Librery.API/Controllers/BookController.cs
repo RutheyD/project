@@ -1,6 +1,5 @@
 ﻿using Library.Core.Models;
 using Library.Core.Services;
-using Library.Service;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -26,16 +25,15 @@ namespace Librery.API.Controllers
         [HttpGet]
         public IEnumerable<Book> Get()
         {
-            return _allLists.BookList;
+          return  _bookService.GetAllS();
         }
 
         // GET api/<BookController>/5
-        //??????????????????????????
         //מחזיר ספר עפ מזהה
         [HttpGet("{code}")]
         public ActionResult<Book> Get(int code)
         {
-            Book book = _allLists.BookList.FirstOrDefault(b => b.Code == code);
+            var book = _bookService.GetBookByCodeS(code);
             if (book == null)
                 return NotFound();
             return Ok(book);
@@ -45,8 +43,8 @@ namespace Librery.API.Controllers
         [HttpGet("{name}name")]
         public ActionResult<Book> Get(string name)
         {
-            List<Book> book = _allLists.BookList.Where(b => b.Name == name).ToList();
-            if (book == null)
+            List<Book> book = _bookService.GetBooksByNameS(name);
+            if (!book.Any())
                 return NotFound();
             return Ok(book);
 
@@ -56,7 +54,8 @@ namespace Librery.API.Controllers
         [HttpPost]
         public void Post([FromBody] Book book)
         {
-            _allLists.BookList.Add(book);
+           _bookService.AddBookS(book);
+           
         }
 
         // PUT api/<BookController>/5
@@ -64,23 +63,14 @@ namespace Librery.API.Controllers
         [HttpPut("{code}")]
         public void Put(int code, [FromBody] Book book)
         {
-            Book tmpBook = _allLists.BookList.FirstOrDefault(book => book.Code == code);
-            if (tmpBook != null)
-            {
-                tmpBook.Author = book.Author;
-                tmpBook.Name = book.Name;
-                tmpBook.Category = book.Category;
-                tmpBook.IsBorrowing = book.IsBorrowing;
-            }
+            _bookService.UpdatBookS(code, book);
         }
 
         // DELETE api/<BookController>/5
         [HttpDelete("{code}")]
         public void Delete(int code)
         {
-            Book book = _allLists.BookList.FirstOrDefault(book => book.Code == code);
-            if (book != null)
-                _allLists.BookList.Remove(book);
+            _bookService.DeleteBookS(code);
         }
 
     }
